@@ -14,34 +14,38 @@ func main() {
 
 	// 注册消息处理函数
 	bot.MessageHandler = func(msg *openwechat.Message) {
-		if msg.IsText() {
-			fmt.Println(msg.Content)
-
-			if msg.IsSendByGroup() {
-				if strings.Contains(msg.Content, pkg.WECHATNAME) || msg.IsAt {
-					if strings.Contains(msg.Content, "古诗词") {
-						replyMsg := pkg.JinRiShiCiRenSheng()
-						msg.ReplyText(replyMsg)
-					} else {
-						replyMsg := pkg.TianReboot(msg.Content)
-						msg.ReplyText(replyMsg)
-					}
-					//_, err := msg.SenderInGroup()
-					//if err != nil {
-					//	fmt.Errorf("Get sender error")
-					//}
-				}
-			}
-			if !msg.IsSendByGroup() {
-				_, err := msg.Sender()
-				if err != nil {
-					fmt.Errorf("Get sender error")
-				}
-				replyMsg := pkg.TianReboot(msg.Content)
-				msg.ReplyText(replyMsg)
-			}
-
+		fmt.Println(msg.Content)
+		if strings.Contains(msg.Content, "<sourcedisplayname>微语简报") {
+			pkg.HandleOfficialAccountMsg(msg.Content)
 		}
+		//if msg.IsText() {
+		//	fmt.Println(msg.Content)
+
+			//if msg.IsSendByGroup() {
+			//	if strings.Contains(msg.Content, pkg.WECHATNAME) || msg.IsAt() {
+			//		if strings.Contains(msg.Content, "古诗词") {
+			//			replyMsg := pkg.JinRiShiCiRenSheng()
+			//			msg.ReplyText(replyMsg)
+			//		} else {
+			//			replyMsg := pkg.TianReboot(msg.Content)
+			//			msg.ReplyText(replyMsg)
+			//		}
+			//		//_, err := msg.SenderInGroup()
+			//		//if err != nil {
+			//		//	fmt.Errorf("Get sender error")
+			//		//}
+			//	}
+			//}
+			//if !msg.IsSendByGroup() {
+			//	_, err := msg.Sender()
+			//	if err != nil {
+			//		fmt.Errorf("Get sender error")
+			//	}
+			//	replyMsg := pkg.TianReboot(msg.Content)
+			//	msg.ReplyText(replyMsg)
+			//}
+
+		//}
 	}
 	// 注册登陆二维码回调
 	bot.UUIDCallback = pkg.ConsoleQrCode
@@ -84,7 +88,21 @@ func main() {
 		fmt.Println(g.Members())
 	}
 
-	fmt.Println(groups.Count())
+	fmt.Println("Group num: %s", groups.Count())
+
+	// 获取所有公众号
+	mps, err :=self.Mps(true)
+	fmt.Println("************* Mps **********")
+	if err != nil {
+		return
+	}
+	for _, m := range mps {
+		fmt.Println(m.User.NickName)
+	}
+	// 处理 微语简报
+	mp := mps.GetByNickName("微语简报")
+	fmt.Println(mp)
+
 	//seaGrps := groups.SearchByNickName(4, "上海")
 	//fmt.Println(seaGrps)
 
